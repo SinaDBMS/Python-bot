@@ -23,7 +23,7 @@ application = Flask(__name__)
 def hello():
     return "Hello World!"
 
-print("running")
+print("runningd")
 if __name__ == "__main__":
     application.run()
     print("running")
