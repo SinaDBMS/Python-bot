@@ -12,11 +12,11 @@ from costume_handlers import photo_handler, video_handler
 from post_scheduling import threaded_function
 
 application = Flask(__name__)
-
-thread1 = Thread(target=threaded_function)
-thread2 = Thread(target=start_bot_thread())
-thread1.start()
-thread2.start()
+#
+# thread1 = Thread(target=threaded_function)
+# thread2 = Thread(target=start_bot_thread())
+# thread1.start()
+# thread2.start()
 
 
 @application.route("/")
@@ -24,6 +24,7 @@ def hello():
     return "Hello World!"
 
 
-if __name__ == "__main__":
-    application.run()
-    print("running")
+print("running")
+
+application.run()
+print("running")
