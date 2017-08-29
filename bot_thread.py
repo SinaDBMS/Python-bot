@@ -9,17 +9,21 @@ main_bot_token = "413427401:AAEgcTahApxJLAPGHK43TfJAl40K7CdJ8pw"
 
 
 def start_bot_thread():
+    print("Start bot Thread started...")
     updater = Updater(main_bot_token)
     dispatcher = updater.dispatcher
     # logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     photo = MessageHandler(Filters.photo, photo_handler)
     video = MessageHandler(Filters.video, video_handler)
-    view_q = CommandHandler('viewqueue', view_queue)
-    empty_q = CommandHandler('emptyqueue', empty_queue)
+    view_q = CommandHandler('viewqueue', view_queue_handler)
+    empty_q = CommandHandler('emptyqueue', empty_queue_handler)
+    delete_p = CommandHandler('deletepost', delete_post, pass_args=True)
 
     dispatcher.add_handler(photo)
     dispatcher.add_handler(video)
     dispatcher.add_handler(view_q)
     dispatcher.add_handler(empty_q)
+    dispatcher.add_handler(delete_p)
     updater.start_polling()
     # updater.idle()
+    print("Ending initialization of the bot...")
