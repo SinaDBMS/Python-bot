@@ -17,4 +17,4 @@ def start_bot_thread():
     dispatcher.add_handler(video)
     dispatcher.add_handler(view_q)
     updater.start_polling()
-    updater.idle()
+    # updater.idle()
