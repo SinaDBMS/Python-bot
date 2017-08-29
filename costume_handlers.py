@@ -13,6 +13,7 @@ sina_id = 70665502
 
 
 def photo_handler(bot, update):
+    print("Photo_handler:")
     try:
         caption = update.message.caption
         file_id = update.message.photo[0].file_id
@@ -25,6 +26,7 @@ def photo_handler(bot, update):
 
 
 def video_handler(bot, update):
+    print("Video_handler")
     try:
         caption = update.message.caption
         file_id = update.message.video.file_id
@@ -37,20 +39,27 @@ def video_handler(bot, update):
 
 
 def view_queue(bot, update):
-    posts = []
-    with open("queue.pkl", "rb") as f:
-        while True:
-            try:
-                posts.append(pickle.load(f))
-            except EOFError:
-                break
+    print("View_queue:")
+    posts = __read_queue()
+    bot.send_message(chat_id=update.message.chat_id, text="{} post(s) in the queue to be sent:".format(len(posts)))
+    i = 1
 
-    bot.send_message(chat_id=sina_id, text="Here's {} posts to be sent:".format(len(posts)))
     for p in posts:
+        bot.send_message(chat_id=update.message.chat_id, text="Post{}".format(i))
+        i += 1
+
         if p.type == Post.photo:
             bot.send_photo(caption=p.caption, chat_id=update.message.chat_id, photo=p.file_id)
         elif p.type == Post.video:
             bot.send_video(caption=p.caption, chat_id=update.message.chat_id, video=p.file_id)
+
+
+def empty_queue(bot, update):
+    print("Empty_queue:")
+    with open("queue.pkl", "w"):
+        pass
+
+    bot.send_message(chat_id=update.message.chat_id, text="Successfully cleared all posts in the queue.")
 
 
 def __write_to_file(file_name, obj):
@@ -61,4 +70,15 @@ def __write_to_file(file_name, obj):
 def __check_sina_id(bot, update):
     if update.message.chat.username == "Sina_bd":
         sina_id = update.message.chat.id
-        print(sina_id)
+        print("This is the current id of Sina_bd: {}".format(sina_id))
+
+
+def __read_queue():
+    posts = []
+    with open("queue.pkl", "rb") as f:
+        while True:
+            try:
+                posts.append(pickle.load(f))
+            except EOFError:
+                break
+    return posts

@@ -2,19 +2,24 @@ from telegram.ext.commandhandler import CommandHandler
 from telegram.ext.filters import Filters
 from telegram.ext.messagehandler import MessageHandler
 from telegram.ext.updater import Updater
-import costume_handlers
-from costume_handlers import photo_handler, video_handler
+from costume_handlers import *
+
+test_bot_token = "425426086:AAFtPbcx_YNjAzZgdudQyQ5yuQ48x2g6O6A"
+main_bot_token = "413427401:AAEgcTahApxJLAPGHK43TfJAl40K7CdJ8pw"
 
 
 def start_bot_thread():
-    updater = Updater('413427401:AAEgcTahApxJLAPGHK43TfJAl40K7CdJ8pw')
+    updater = Updater(main_bot_token)
     dispatcher = updater.dispatcher
     # logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     photo = MessageHandler(Filters.photo, photo_handler)
     video = MessageHandler(Filters.video, video_handler)
-    view_q = CommandHandler('viewqueue', costume_handlers.view_queue)
+    view_q = CommandHandler('viewqueue', view_queue)
+    empty_q = CommandHandler('emptyqueue', empty_queue)
+
     dispatcher.add_handler(photo)
     dispatcher.add_handler(video)
     dispatcher.add_handler(view_q)
+    dispatcher.add_handler(empty_q)
     updater.start_polling()
     # updater.idle()
