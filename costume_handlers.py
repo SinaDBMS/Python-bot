@@ -13,7 +13,7 @@ sina_id = 70665502
 
 
 def photo_handler(bot, update):
-    print("Photo_handler:")
+    print("Photo_handler triggered by {}:".format(update.message.chat.id))
     try:
         caption = update.message.caption
         file_id = update.message.photo[0].file_id
@@ -26,7 +26,7 @@ def photo_handler(bot, update):
 
 
 def video_handler(bot, update):
-    print("Video_handler")
+    print("Video_handler triggered by {}:".format(update.message.chat.id))
     try:
         caption = update.message.caption
         file_id = update.message.video.file_id
@@ -39,7 +39,7 @@ def video_handler(bot, update):
 
 
 def view_queue_handler(bot, update):
-    print("View_queue:")
+    print("View_queue_handler triggered by {}:".format(update.message.chat.id))
     posts = __read_queue()
     bot.send_message(chat_id=update.message.chat_id, text="{} post(s) in the queue to be sent:".format(len(posts)))
     i = 1
@@ -55,20 +55,21 @@ def view_queue_handler(bot, update):
 
 
 def empty_queue_handler(bot, update):
-    print("Empty_queue:")
+    print("Empty_queue_handler triggered by {}:".format(update.message.chat.id))
     with open("queue.pkl", "w"):
         pass
 
     bot.send_message(chat_id=update.message.chat_id, text="Successfully cleared all posts in the queue.")
 
 
-def delete_post(bot, update, args):
+def delete_post_handler(bot, update, args):
+    print("Delete_post_handler triggered by {}:".format(update.message.chat.id))
     posts = __read_queue()
     initial_size = len(posts)
 
     for a in args:
         try:
-            del posts[int(a) - 1]
+            del posts[int(a) - 1]  # Attention
         except ValueError:
             message = "Invalid argument: {}. Required a number.".format(a)
             print(message)
@@ -81,6 +82,33 @@ def delete_post(bot, update, args):
     if initial_size != len(posts):
         __write_to_file("queue.pkl", posts)
         bot.send_message(chat_id=update.message.chat_id, text="Successfully removed post(s).")
+
+
+def manual_send_handler(bot, update, args):
+    print("Manual_handler triggered by {}:".format(update.message.chat.id))
+    posts = __read_queue()
+    initial_size = len(posts)
+
+    for a in args:
+        try:
+            p = posts[int(a) - 1]
+            if p.type == Post.photo:
+                bot.send_photo(caption=p.caption, chat_id=__test_channel, photo=p.file_id)
+            elif p.type == Post.video:
+                bot.send_video(caption=p.caption, chat_id=__test_channel, video=p.file_id)
+            del posts[int(a) - 1]  # Attention
+        except ValueError:
+            message = "Invalid argument: {}. Required a number.".format(a)
+            print(message)
+            bot.send_message(chat_id=update.message.chat_id, text=message)
+        except IndexError:
+            message = "Maximum Number allowed: {}".format(len(posts))
+            print(message)
+            bot.send_message(chat_id=update.message.chat_id, text=message)
+
+    if initial_size != len(posts):
+        __write_to_file("queue.pkl", posts)
+        bot.send_message(chat_id=update.message.chat_id, text="Successfully sent post(s).")
 
 
 def __write_to_file(file_name, posts_list):
