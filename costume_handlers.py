@@ -7,9 +7,10 @@ import pickle
 
 from post_structure import Post
 
+__das_deutsche_journal_channel = "-1001142145062"
 __test_channel = "-1001104151930L"
 __target_channel = __test_channel
-sina_id = 70665502
+__sina_id = 70665502
 
 
 def photo_handler(bot, update):
@@ -22,7 +23,7 @@ def photo_handler(bot, update):
     except Exception:
         message = "Exception in " + __name__ + ": photo_handler"
         logging.exception(message)
-        bot.send_message(chat_id=sina_id, text=message)
+        bot.send_message(chat_id=__sina_id, text=message)
 
 
 def video_handler(bot, update):
@@ -35,7 +36,20 @@ def video_handler(bot, update):
     except Exception:
         message = "Exception in " + __name__ + ": video_handler"
         logging.exception(message)
-        bot.send_message(chat_id=sina_id, text=message)
+        bot.send_message(chat_id=__sina_id, text=message)
+
+
+def audio_handler(bot, update):
+    print("Audio_handler triggered by {}:".format(update.message.chat.id))
+    try:
+        caption = update.message.caption
+        file_id = update.message.audio.file_id
+        __append_to_file("queue.pkl", Post(caption, file_id, Post.audio))
+        __check_sina_id(bot, update)
+    except Exception:
+        message = "Exception in " + __name__ + ": audio_handler"
+        logging.exception(message)
+        bot.send_message(chat_id=__sina_id, text=message)
 
 
 def view_queue_handler(bot, update):
@@ -52,6 +66,8 @@ def view_queue_handler(bot, update):
             bot.send_photo(caption=p.caption, chat_id=update.message.chat_id, photo=p.file_id)
         elif p.type == Post.video:
             bot.send_video(caption=p.caption, chat_id=update.message.chat_id, video=p.file_id)
+        elif p.type == Post.audio:
+            bot.send_audio(caption=p.caption, chat_id=update.message.chat_id, audio=p.file_id)
 
 
 def empty_queue_handler(bot, update):
@@ -85,7 +101,7 @@ def delete_post_handler(bot, update, args):
 
 
 def manual_send_handler(bot, update, args):
-    print("Manual_handler triggered by {}:".format(update.message.chat.id))
+    print("Manual_send_handler triggered by {}:".format(update.message.chat.id))
     posts = __read_queue()
     initial_size = len(posts)
 
@@ -93,9 +109,12 @@ def manual_send_handler(bot, update, args):
         try:
             p = posts[int(a) - 1]
             if p.type == Post.photo:
-                bot.send_photo(caption=p.caption, chat_id=__test_channel, photo=p.file_id)
+                bot.send_photo(caption=p.caption, chat_id=__target_channel, photo=p.file_id)
             elif p.type == Post.video:
-                bot.send_video(caption=p.caption, chat_id=__test_channel, video=p.file_id)
+                bot.send_video(caption=p.caption, chat_id=__target_channel, video=p.file_id)
+            elif p.type == Post.audio:
+                bot.send_audio(caption=p.caption, chat_id=__target_channel, audio=p.file_id)
+
             del posts[int(a) - 1]  # Attention
         except ValueError:
             message = "Invalid argument: {}. Required a number.".format(a)
@@ -111,6 +130,38 @@ def manual_send_handler(bot, update, args):
         bot.send_message(chat_id=update.message.chat_id, text="Successfully sent post(s).")
 
 
+def change_target_channel(bot, update):
+    global __target_channel
+
+    if __target_channel == __test_channel:
+        __target_channel = __das_deutsche_journal_channel
+
+    elif __target_channel == __das_deutsche_journal_channel:
+        __target_channel = __test_channel
+        print("test")
+
+    if __target_channel == __das_deutsche_journal_channel:
+        message = "Das deutsche Journal"
+    elif __target_channel == __test_channel:
+        message = "Test Channel"
+
+    message = "Successfully switched to {}: {}.".format(message, __target_channel)
+    print(message)
+    bot.send_message(chat_id=update.message.chat_id, text=message)
+
+
+def view_target_channel(bot, update):
+    channel = "Test Channel"
+    if __target_channel == __das_deutsche_journal_channel:
+        channel = "Das deutsche Journal"
+    elif __target_channel == __test_channel:
+        channel = "Test Channel"
+
+    message = "Target channel set to {}: {}.".format(channel, __target_channel)
+    print(message)
+    bot.send_message(chat_id=update.message.chat_id, text=message)
+
+
 def __write_to_file(file_name, posts_list):
     with open(file_name, "wb") as f:
         for p in posts_list:
@@ -123,9 +174,10 @@ def __append_to_file(file_name, post):
 
 
 def __check_sina_id(bot, update):
+    global __sina_id
     if update.message.chat.username == "Sina_bd":
-        sina_id = update.message.chat.id
-        print("This is the current id of Sina_bd: {}".format(sina_id))
+        __sina_id = update.message.chat.id
+        print("This is the current id of Sina_bd: {}".format(__sina_id))
 
 
 def __read_queue():

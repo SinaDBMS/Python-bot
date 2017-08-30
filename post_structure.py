@@ -2,7 +2,7 @@ class Post:
     photo = "Photo"
     galerie = "Galerie"
     video = "Video"
-    musik = "Musik"
+    audio = "Audio"
     lyrik = "Lyrik"
 
     def __init__(self, caption, file_id, type):
