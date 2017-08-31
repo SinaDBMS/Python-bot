@@ -14,7 +14,7 @@ __sina_id = 70665502
 
 
 def photo_handler(bot, update):
-    print("Photo_handler triggered by {}:".format(update.message.chat.id))
+    print("Photo_handler triggered by {}:".format(update.message.chat.username))
     try:
         caption = update.message.caption
         file_id = update.message.photo[0].file_id
@@ -27,7 +27,7 @@ def photo_handler(bot, update):
 
 
 def video_handler(bot, update):
-    print("Video_handler triggered by {}:".format(update.message.chat.id))
+    print("Video_handler triggered by {}:".format(update.message.chat.username))
     try:
         caption = update.message.caption
         file_id = update.message.video.file_id
@@ -40,7 +40,7 @@ def video_handler(bot, update):
 
 
 def audio_handler(bot, update):
-    print("Audio_handler triggered by {}:".format(update.message.chat.id))
+    print("Audio_handler triggered by {}:".format(update.message.chat.username))
     try:
         caption = update.message.caption
         file_id = update.message.audio.file_id
@@ -53,7 +53,7 @@ def audio_handler(bot, update):
 
 
 def view_queue_handler(bot, update):
-    print("View_queue_handler triggered by {}:".format(update.message.chat.id))
+    print("View_queue_handler triggered by {}:".format(update.message.chat.username))
     posts = __read_queue()
     bot.send_message(chat_id=update.message.chat_id, text="{} post(s) in the queue to be sent:".format(len(posts)))
     i = 1
@@ -71,7 +71,7 @@ def view_queue_handler(bot, update):
 
 
 def empty_queue_handler(bot, update):
-    print("Empty_queue_handler triggered by {}:".format(update.message.chat.id))
+    print("Empty_queue_handler triggered by {}:".format(update.message.chat.username))
     with open("queue.pkl", "w"):
         pass
 
@@ -79,21 +79,25 @@ def empty_queue_handler(bot, update):
 
 
 def delete_post_handler(bot, update, args):
-    print("Delete_post_handler triggered by {}:".format(update.message.chat.id))
+    print("Delete_post_handler triggered by {}:".format(update.message.chat.username))
     posts = __read_queue()
+    junks = []
     initial_size = len(posts)
 
     for a in args:
         try:
-            del posts[int(a) - 1]  # Attention
+            junks.append(posts[int(a) - 1])
         except ValueError:
             message = "Invalid argument: {}. Required a number.".format(a)
             print(message)
             bot.send_message(chat_id=update.message.chat_id, text=message)
         except IndexError:
-            message = "Maximum Number allowed: {}".format(len(posts))
+            message = "Maximum Number allowed: {}. {} given.".format(len(posts), a)
             print(message)
             bot.send_message(chat_id=update.message.chat_id, text=message)
+
+    for j in junks:
+        posts.remove(j)
 
     if initial_size != len(posts):
         __write_to_file("queue.pkl", posts)
@@ -101,8 +105,9 @@ def delete_post_handler(bot, update, args):
 
 
 def manual_send_handler(bot, update, args):
-    print("Manual_send_handler triggered by {}:".format(update.message.chat.id))
+    print("Manual_send_handler triggered by {}:".format(update.message.chat.username))
     posts = __read_queue()
+    junks = []
     initial_size = len(posts)
 
     for a in args:
@@ -114,16 +119,18 @@ def manual_send_handler(bot, update, args):
                 bot.send_video(caption=p.caption, chat_id=__target_channel, video=p.file_id)
             elif p.type == Post.audio:
                 bot.send_audio(caption=p.caption, chat_id=__target_channel, audio=p.file_id)
-
-            del posts[int(a) - 1]  # Attention
+            junks.append(p)
         except ValueError:
             message = "Invalid argument: {}. Required a number.".format(a)
             print(message)
             bot.send_message(chat_id=update.message.chat_id, text=message)
         except IndexError:
-            message = "Maximum Number allowed: {}".format(len(posts))
+            message = "Maximum Number allowed: {}. {} given.".format(len(posts), a)
             print(message)
             bot.send_message(chat_id=update.message.chat_id, text=message)
+
+    for j in junks:
+        posts.remove(j)
 
     if initial_size != len(posts):
         __write_to_file("queue.pkl", posts)
