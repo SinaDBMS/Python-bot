@@ -3,6 +3,7 @@ bot --> from telegram.bot import Bot
 update --> from telegram.update import Update
 """
 import logging
+import os
 import pickle
 
 from post_structure import Post
@@ -167,6 +168,14 @@ def view_target_channel(bot, update):
     message = "Target channel set to {}: {}.".format(channel, __target_channel)
     print(message)
     bot.send_message(chat_id=update.message.chat_id, text=message)
+
+
+def get_queue_handler(bot, update):
+    print("get_queue_handler triggered by {}:".format(update.message.chat.username))
+    if os.path.getsize("queue.pkl") > 0:
+        bot.send_document(chat_id=update.message.chat_id, document=open("queue.pkl", 'rb'))
+    else:
+        bot.send_message(chat_id=update.message.chat_id, text="Empty file.")
 
 
 def __write_to_file(file_name, posts_list):

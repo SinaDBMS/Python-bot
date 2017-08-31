@@ -22,6 +22,7 @@ def start_bot_thread():
     empty_q = CommandHandler('emptyqueue', empty_queue_handler)
     delete_p = CommandHandler('deletepost', delete_post_handler, pass_args=True)
     send_p = CommandHandler('sendpost', manual_send_handler, pass_args=True)
+    get_q = CommandHandler('getqueue', get_queue_handler)
 
     dispatcher.add_handler(photo)
     dispatcher.add_handler(video)
@@ -32,6 +33,7 @@ def start_bot_thread():
     dispatcher.add_handler(empty_q)
     dispatcher.add_handler(delete_p)
     dispatcher.add_handler(send_p)
+    dispatcher.add_handler(get_q)
     updater.start_polling()
     # updater.idle()
     print("Ending initialization of the bot...")
