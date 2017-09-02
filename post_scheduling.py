@@ -6,7 +6,7 @@ from core_functions import *
 from post_structure import Post
 
 
-def task(scheduler_object):
+def task():
     now = Datetime.now()
     print(now)
     print("Time zone name: {}, diff: {}".format(time.tzname, time.timezone))
@@ -27,7 +27,7 @@ def task(scheduler_object):
     elif abs(now_in_seconds - __H20) < 1:
         post = get_first_relevant_post(["#Galerie", "#lustig"], Post.photo, posts)
     elif abs(now_in_seconds - __H21) < 1:
-        pass
+        post = get_first_relevant_post(["#Video"], Post.video, posts)
     elif abs(now_in_seconds - __H22) < 1:
         post = get_first_relevant_post([], Post.audio, posts)
         lyric = get_first_relevant_post(["#Lyrik"], Post.photo, posts)
@@ -43,8 +43,6 @@ def task(scheduler_object):
 
         journal_bot.send_message(chat_id="70665502", text="{} post(s) sent to {} and removed from the "
                                                           "queue.".format(x, get_current_channel_id()))
-
-    scheduler_object.enter(__period, 1, task, [scheduler_object])
 
 
 def get_tasks_queue(bot, update):
@@ -65,10 +63,11 @@ def start_scheduling():
     elif 1860 <= now_in_seconds < 3600:
         starting_time = 3600 - now_in_seconds
 
-    print("scheduler starts in {} seconds".format(starting_time))
-    scheduler.enter(starting_time, 1, task, [scheduler])
-    scheduler.run()
-    print("Finished execution of the start_scheduling function.")
+    while True:
+        print("scheduler starts in {} seconds".format(starting_time))
+        scheduler.enter(starting_time, 1, task)
+        starting_time = __period
+        scheduler.run()
 
 
 def __to_seconds(t):
@@ -80,7 +79,9 @@ def __convert_to_local_time(t):
 
 
 ####################################################################
-journal_bot = Bot('425426086:AAFtPbcx_YNjAzZgdudQyQ5yuQ48x2g6O6A')
+test_bot_token = "425426086:AAFtPbcx_YNjAzZgdudQyQ5yuQ48x2g6O6A"
+main_bot_token = "413427401:AAEgcTahApxJLAPGHK43TfJAl40K7CdJ8pw"
+journal_bot = Bot(main_bot_token)
 scheduler = Scheduler()
 
 __period = Timedelta(minutes=30).total_seconds()
@@ -91,7 +92,7 @@ __H10 = __convert_to_local_time(10 * 3600 + 0 * 60 + 0)
 __H13 = __convert_to_local_time(13 * 3600 + 0 * 60 + 0)
 __H17 = __convert_to_local_time(17 * 3600 + 0 * 60 + 0)
 __H20 = __convert_to_local_time(20 * 3600 + 0 * 60 + 0)
-__H21 = __convert_to_local_time(21 * 3600 + 0 * 60 + 0)
+__H21 = __convert_to_local_time(21 * 3600 + 30 * 60 + 0)
 __H22 = __convert_to_local_time(22 * 3600 + 0 * 60 + 0)
 __times.append(__H01)
 __times.append(__H08)
