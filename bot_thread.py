@@ -3,6 +3,7 @@ from telegram.ext.filters import Filters
 from telegram.ext.messagehandler import MessageHandler
 from telegram.ext.updater import Updater
 from costume_handlers import *
+from post_scheduling import get_tasks_queue
 
 test_bot_token = "425426086:AAFtPbcx_YNjAzZgdudQyQ5yuQ48x2g6O6A"
 main_bot_token = "413427401:AAEgcTahApxJLAPGHK43TfJAl40K7CdJ8pw"
@@ -23,6 +24,7 @@ def start_bot_thread():
     delete_p = CommandHandler('deletepost', delete_post_handler, pass_args=True)
     send_p = CommandHandler('sendpost', manual_send_handler, pass_args=True)
     get_q = CommandHandler('getqueue', get_queue_handler)
+    get_t = CommandHandler('gettasks', get_tasks_queue)
 
     dispatcher.add_handler(photo)
     dispatcher.add_handler(video)
@@ -34,6 +36,7 @@ def start_bot_thread():
     dispatcher.add_handler(delete_p)
     dispatcher.add_handler(send_p)
     dispatcher.add_handler(get_q)
+    dispatcher.add_handler(get_t)
     updater.start_polling()
     # updater.idle()
     print("Ending initialization of the bot...")

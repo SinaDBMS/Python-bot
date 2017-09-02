@@ -2,12 +2,13 @@ from threading import Thread
 
 from flask import Flask
 from bot_thread import start_bot_thread
+from post_scheduling import start_scheduling
 
 application = Flask(__name__)
 
-# thread1 = Thread(target=threaded_function)
-thread2 = Thread(target=start_bot_thread())
-# thread1.start()
+thread1 = Thread(target=start_scheduling) #Caution start_scheduling()
+thread2 = Thread(target=start_bot_thread) #start_scheduling()
+thread1.start()
 thread2.start()
 
 

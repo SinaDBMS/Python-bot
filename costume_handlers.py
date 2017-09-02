@@ -5,12 +5,11 @@ update --> from telegram.update import Update
 import logging
 import os
 import pickle
+from datetime import datetime
 
+from core_functions import *
 from post_structure import Post
 
-__das_deutsche_journal_channel = "-1001142145062"
-__test_channel = "-1001104151930L"
-__target_channel = __test_channel
 __sina_id = 70665502
 
 
@@ -55,35 +54,27 @@ def audio_handler(bot, update):
 
 def view_queue_handler(bot, update):
     print("View_queue_handler triggered by {}:".format(update.message.chat.username))
-    posts = __read_queue()
+    posts = load_queue()
     bot.send_message(chat_id=update.message.chat_id, text="{} post(s) in the queue to be sent:".format(len(posts)))
     i = 1
 
     for p in posts:
         bot.send_message(chat_id=update.message.chat_id, text="Post{}".format(i))
         i += 1
-
-        if p.type == Post.photo:
-            bot.send_photo(caption=p.caption, chat_id=update.message.chat_id, photo=p.file_id)
-        elif p.type == Post.video:
-            bot.send_video(caption=p.caption, chat_id=update.message.chat_id, video=p.file_id)
-        elif p.type == Post.audio:
-            bot.send_audio(caption=p.caption, chat_id=update.message.chat_id, audio=p.file_id)
+        send_post(bot, update.message.chat_id, p)
 
 
 def empty_queue_handler(bot, update):
     print("Empty_queue_handler triggered by {}:".format(update.message.chat.username))
     with open("queue.pkl", "w"):
         pass
-
     bot.send_message(chat_id=update.message.chat_id, text="Successfully cleared all posts in the queue.")
 
 
 def delete_post_handler(bot, update, args):
     print("Delete_post_handler triggered by {}:".format(update.message.chat.username))
-    posts = __read_queue()
+    posts = load_queue()
     junks = []
-    initial_size = len(posts)
 
     for a in args:
         try:
@@ -97,29 +88,19 @@ def delete_post_handler(bot, update, args):
             print(message)
             bot.send_message(chat_id=update.message.chat_id, text=message)
 
-    for j in junks:
-        posts.remove(j)
-
-    if initial_size != len(posts):
-        __write_to_file("queue.pkl", posts)
-        bot.send_message(chat_id=update.message.chat_id, text="Successfully removed post(s).")
+    x = delete_posts(junks, posts)
+    bot.send_message(chat_id=update.message.chat_id, text="{} post(s) deleted.".format(x))
 
 
 def manual_send_handler(bot, update, args):
     print("Manual_send_handler triggered by {}:".format(update.message.chat.username))
-    posts = __read_queue()
+    posts = load_queue()
     junks = []
-    initial_size = len(posts)
 
     for a in args:
         try:
             p = posts[int(a) - 1]
-            if p.type == Post.photo:
-                bot.send_photo(caption=p.caption, chat_id=__target_channel, photo=p.file_id)
-            elif p.type == Post.video:
-                bot.send_video(caption=p.caption, chat_id=__target_channel, video=p.file_id)
-            elif p.type == Post.audio:
-                bot.send_audio(caption=p.caption, chat_id=__target_channel, audio=p.file_id)
+            send_post(bot, get_current_channel_id(), p)
             junks.append(p)
         except ValueError:
             message = "Invalid argument: {}. Required a number.".format(a)
@@ -130,42 +111,25 @@ def manual_send_handler(bot, update, args):
             print(message)
             bot.send_message(chat_id=update.message.chat_id, text=message)
 
-    for j in junks:
-        posts.remove(j)
-
-    if initial_size != len(posts):
-        __write_to_file("queue.pkl", posts)
-        bot.send_message(chat_id=update.message.chat_id, text="Successfully sent post(s).")
+    x = delete_posts(junks, posts)
+    bot.send_message(chat_id=update.message.chat_id,
+                     text="{} post(s) sent to {} and removed from the queue.".format(x, get_current_channel_name()))
 
 
 def change_target_channel(bot, update):
-    global __target_channel
-
-    if __target_channel == __test_channel:
-        __target_channel = __das_deutsche_journal_channel
-
-    elif __target_channel == __das_deutsche_journal_channel:
-        __target_channel = __test_channel
-        print("test")
-
-    if __target_channel == __das_deutsche_journal_channel:
-        message = "Das deutsche Journal"
-    elif __target_channel == __test_channel:
-        message = "Test Channel"
-
-    message = "Successfully switched to {}: {}.".format(message, __target_channel)
+    print("Change_target_channel triggered by {}:".format(update.message.chat.username))
+    print(datetime.now())
+    current_channel_id = change_current_channel()
+    current_channel_name = get_current_channel_name()
+    message = "Successfully switched to {}: {}.".format(current_channel_name, current_channel_id)
     print(message)
     bot.send_message(chat_id=update.message.chat_id, text=message)
 
 
 def view_target_channel(bot, update):
-    channel = "Test Channel"
-    if __target_channel == __das_deutsche_journal_channel:
-        channel = "Das deutsche Journal"
-    elif __target_channel == __test_channel:
-        channel = "Test Channel"
-
-    message = "Target channel set to {}: {}.".format(channel, __target_channel)
+    print("View_target_channel triggered by {}:".format(update.message.chat.username))
+    print(datetime.now())
+    message = "Current channel is {}: {}.".format(get_current_channel_name(), get_current_channel_id())
     print(message)
     bot.send_message(chat_id=update.message.chat_id, text=message)
 
@@ -178,12 +142,6 @@ def get_queue_handler(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text="Empty file.")
 
 
-def __write_to_file(file_name, posts_list):
-    with open(file_name, "wb") as f:
-        for p in posts_list:
-            pickle.dump(p, f)
-
-
 def __append_to_file(file_name, post):
     with open(file_name, "ab") as f:
         pickle.dump(post, f)
@@ -194,14 +152,3 @@ def __check_sina_id(bot, update):
     if update.message.chat.username == "Sina_bd":
         __sina_id = update.message.chat.id
         print("This is the current id of Sina_bd: {}".format(__sina_id))
-
-
-def __read_queue():
-    posts = []
-    with open("queue.pkl", "rb") as f:
-        while True:
-            try:
-                posts.append(pickle.load(f))
-            except EOFError:
-                break
-    return posts
