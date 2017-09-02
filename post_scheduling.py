@@ -24,7 +24,7 @@ def task(scheduler_object):
         post = get_first_relevant_post(["#Galerie", "#Wissen"], Post.photo, posts)
     elif abs(now_in_seconds - __H17) < 1:
         post = get_first_relevant_post(["#Video"], Post.video, posts)
-    elif abs(now_in_seconds - __H19) < 1:
+    elif abs(now_in_seconds - __H20) < 1:
         post = get_first_relevant_post(["#Galerie", "#lustig"], Post.photo, posts)
     elif abs(now_in_seconds - __H21) < 1:
         pass
@@ -76,7 +76,7 @@ def __to_seconds(t):
 
 
 def __convert_to_local_time(t):
-    return t + (-12600 - time.timezone)
+    return t - (4.5 * 3600)
 
 
 ####################################################################
@@ -90,7 +90,7 @@ __H08 = __convert_to_local_time(8 * 3600 + 0 * 60 + 0)
 __H10 = __convert_to_local_time(10 * 3600 + 0 * 60 + 0)
 __H13 = __convert_to_local_time(13 * 3600 + 0 * 60 + 0)
 __H17 = __convert_to_local_time(17 * 3600 + 0 * 60 + 0)
-__H19 = __convert_to_local_time(20 * 3600 + 30 * 60 + 0)
+__H20 = __convert_to_local_time(20 * 3600 + 0 * 60 + 0)
 __H21 = __convert_to_local_time(21 * 3600 + 0 * 60 + 0)
 __H22 = __convert_to_local_time(22 * 3600 + 0 * 60 + 0)
 __times.append(__H01)
@@ -98,6 +98,6 @@ __times.append(__H08)
 __times.append(__H10)
 __times.append(__H13)
 __times.append(__H17)
-__times.append(__H19)
+__times.append(__H20)
 __times.append(__H21)
 __times.append(__H22)
