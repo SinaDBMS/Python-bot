@@ -6,10 +6,11 @@ from core_functions import *
 from post_structure import Post
 
 
-def task1(scheduler):
+def task(scheduler_object):
     now = Datetime.now()
-    now_in_seconds = __to_seconds(now)
     print(now)
+    print("Time zone name: {}, diff: {}".format(time.tzname, time.timezone))
+    now_in_seconds = __to_seconds(now)
     posts = load_queue()
     post = None
     lyric = None
@@ -43,7 +44,7 @@ def task1(scheduler):
         journal_bot.send_message(chat_id="70665502", text="{} post(s) sent to {} and removed from the "
                                                           "queue.".format(x, get_current_channel_id()))
 
-    scheduler.enter(__period, 1, task1, [scheduler])
+    scheduler_object.enter(__period, 1, task, [scheduler_object])
 
 
 def get_tasks_queue(bot, update):
@@ -53,15 +54,21 @@ def get_tasks_queue(bot, update):
 
 
 def start_scheduling():
-    for tm in __times:
-        now = Datetime.now()
-        starting_time = tm - __to_seconds(now)
-        if starting_time < 0:
-            starting_time += __period
+    now = Datetime.now()
+    now_in_seconds = now.minute * 60 + now.second
+    print("Now in seconds: {}".format(now_in_seconds))
+    print(now)
+    print("Time zone name: {}, diff: {}".format(time.tzname, time.timezone))
+    starting_time = 0
+    if 60 <= now_in_seconds < 1860:
+        starting_time = 1800 - now_in_seconds
+    elif 1860 <= now_in_seconds < 3600:
+        starting_time = 3600 - now_in_seconds
 
-        scheduler.enter(starting_time, 1, task1, [scheduler])
-
+    print("scheduler starts in {} seconds".format(starting_time))
+    scheduler.enter(starting_time, 1, task, [scheduler])
     scheduler.run()
+    print("Finished execution of the start_scheduling function.")
 
 
 def __to_seconds(t):
@@ -76,14 +83,14 @@ def __convert_to_local_time(t):
 journal_bot = Bot('425426086:AAFtPbcx_YNjAzZgdudQyQ5yuQ48x2g6O6A')
 scheduler = Scheduler()
 
-__period = Timedelta(days=1).total_seconds()
+__period = Timedelta(minutes=30).total_seconds()
 __times = []
 __H01 = __convert_to_local_time(1 * 3600 + 0 * 60 + 0)
 __H08 = __convert_to_local_time(8 * 3600 + 0 * 60 + 0)
 __H10 = __convert_to_local_time(10 * 3600 + 0 * 60 + 0)
 __H13 = __convert_to_local_time(13 * 3600 + 0 * 60 + 0)
 __H17 = __convert_to_local_time(17 * 3600 + 0 * 60 + 0)
-__H19 = __convert_to_local_time(19 * 3600 + 0 * 60 + 0)
+__H19 = __convert_to_local_time(20 * 3600 + 30 * 60 + 0)
 __H21 = __convert_to_local_time(21 * 3600 + 0 * 60 + 0)
 __H22 = __convert_to_local_time(22 * 3600 + 0 * 60 + 0)
 __times.append(__H01)
