@@ -5,9 +5,10 @@ from post_structure import Post
 __das_deutsche_journal_channel = "-1001142145062"
 __test_channel = "-1001104151930L"
 __target_channel = __test_channel
+__sina_id = 70665502
 
 
-def delete_posts(junks, posts): #change the name
+def delete_posts(junks, posts):  # change the name
     initial_size = len(posts)
     for j in junks:
         posts.remove(j)
@@ -72,7 +73,27 @@ def load_queue():
     return posts
 
 
+def get_masters_id():
+    return __sina_id
+
+
+def set_masters_id(new_id):
+    global __sina_id
+    __sina_id = new_id
+
+
+def check_sina_id(update):
+    if update.message.chat.username == "Sina_bd":
+        if update.message.chat.id != get_masters_id():
+            set_masters_id(update.message.chat.id)
+
+
 def __write_to_file(file_name, posts_list):
     with open(file_name, "wb") as f:
         for p in posts_list:
             pickle.dump(p, f)
+
+
+def append_to_file(file_name, post):
+    with open(file_name, "ab") as f:
+        pickle.dump(post, f)
