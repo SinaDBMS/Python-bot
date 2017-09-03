@@ -7,29 +7,28 @@ from post_structure import Post
 
 def task():
     now = Datetime.now()
-    print(now)
     print("Execution of task started at: {}".format(now))
     now_in_seconds = __to_seconds(now)
     posts = load_queue()
     post = None
     lyric = None
-    if abs(now_in_seconds - __H01) < 1:
+    if abs(now_in_seconds - __H01) < 10:
         post = get_first_relevant_post(["#Galerie", "#Spruch_des_Tages"], Post.photo, posts)
-    elif abs(now_in_seconds - __H08) < 1:
+    elif abs(now_in_seconds - __H08) < 10:
         post = get_first_relevant_post(["#Video"], Post.video, posts)
-    elif abs(now_in_seconds - __H10) < 1:
+    elif abs(now_in_seconds - __H10) < 10:
         pass
-    elif abs(now_in_seconds - __H11) < 1:
-        pass
-    elif abs(now_in_seconds - __H13) < 1:
+    elif abs(now_in_seconds - __H11) < 10:
+        post = get_first_relevant_post(["#Galerie", "#Geschichte"], Post.photo, posts)
+    elif abs(now_in_seconds - __H13) < 10:
         post = get_first_relevant_post(["#Galerie", "#Wissen"], Post.photo, posts)
-    elif abs(now_in_seconds - __H17) < 1:
+    elif abs(now_in_seconds - __H17) < 10:
         post = get_first_relevant_post(["#Video"], Post.video, posts)
-    elif abs(now_in_seconds - __H20) < 1:
+    elif abs(now_in_seconds - __H20) < 10:
         post = get_first_relevant_post(["#Galerie", "#lustig"], Post.photo, posts)
-    elif abs(now_in_seconds - __H21) < 1:
+    elif abs(now_in_seconds - __H21) < 10:
         pass
-    elif abs(now_in_seconds - __H22) < 1:
+    elif abs(now_in_seconds - __H22) < 10:
         post = get_first_relevant_post([], Post.audio, posts)
         lyric = get_first_relevant_post(["#Lyrik"], Post.photo, posts)
 
@@ -59,10 +58,12 @@ def start_scheduling():
 
     i = 1
     while True:
-        print("Iteration No. {}: scheduler starts in {} seconds".format(i, starting_time))
+        print("Iteration No. {}: scheduler starts in {} seconds.".format(i, starting_time))
         scheduler.enter(starting_time, 1, task)
-        starting_time = __period
         scheduler.run()
+        starting_time = __period
+        if Datetime.now().second % 10 > 2:
+            starting_time -= 1
         i += 1
 
 
@@ -82,11 +83,11 @@ scheduler = Scheduler()
 
 __period = Timedelta(minutes=30).total_seconds()
 __H01 = __convert_to_local_time(1 * 3600 + 0 * 60 + 0)
-__H08 = __convert_to_local_time(8 * 3600 + 0 * 60 + 0)
+__H08 = __convert_to_local_time(8 * 3600 + 30 * 60 + 0)
 __H10 = __convert_to_local_time(10 * 3600 + 0 * 60 + 0)
 __H11 = __convert_to_local_time(11 * 3600 + 0 * 60 + 0)
-__H13 = __convert_to_local_time(13 * 3600 + 30 * 60 + 0)
+__H13 = __convert_to_local_time(13 * 3600 + 0 * 60 + 0)
 __H17 = __convert_to_local_time(17 * 3600 + 0 * 60 + 0)
-__H20 = __convert_to_local_time(20 * 3600 + 30 * 60 + 0)
+__H20 = __convert_to_local_time(20 * 3600 + 0 * 60 + 0)
 __H21 = __convert_to_local_time(21 * 3600 + 0 * 60 + 0)
 __H22 = __convert_to_local_time(22 * 3600 + 30 * 60 + 0)
