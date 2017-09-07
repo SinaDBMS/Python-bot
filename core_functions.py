@@ -1,6 +1,6 @@
 import pickle
 
-from post_structure import Post
+from data_structures import Post
 
 __das_deutsche_journal_channel = "-1001142145062"
 __test_channel = "-1001104151930L"

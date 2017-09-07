@@ -5,8 +5,9 @@ update --> from telegram.update import Update
 import logging
 import os
 from datetime import datetime
+
 from core_functions import *
-from post_structure import Post
+from data_structures import Post
 
 
 def photo_handler(bot, update):
@@ -41,6 +42,20 @@ def audio_handler(bot, update):
         caption = update.message.caption
         file_id = update.message.audio.file_id
         append_to_file("queue.pkl", Post(caption, file_id, Post.audio))
+        check_sina_id(update)
+    except Exception:
+        message = "Exception in " + __name__ + ": audio_handler"
+        logging.exception(message)
+        bot.send_message(chat_id=get_masters_id(), text=message)
+
+
+def document_handler(bot, update):
+    print("Document_handler triggered by {}:".format(update.message.chat.username))
+    try:
+        with open("tasks.txt", "w") as f:
+            file_id = update.message.document.file_id
+            new_file = bot.get_file(file_id)
+            new_file.download("tasks.txt")
         check_sina_id(update)
     except Exception:
         message = "Exception in " + __name__ + ": audio_handler"
