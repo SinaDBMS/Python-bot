@@ -15,7 +15,7 @@ def task():
     lyric = None
 
     for p in programs:
-        if abs(now_in_seconds - p.seconds) < 10:
+        if abs(now_in_seconds - __convert_to_local_time(p.seconds)) < 10:
             if p.kind == Post.audio:
                 post = get_first_relevant_post([], Post.audio, posts)
                 lyric = get_first_relevant_post(["#Lyrik"], Post.photo, posts)
