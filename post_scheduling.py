@@ -2,37 +2,27 @@ from datetime import timedelta as Timedelta, datetime as Datetime, timedelta
 from sched import scheduler as Scheduler
 from telegram.bot import Bot
 from core_functions import *
-from data_structures import Post
+from data_structures import Post, read_tasks
 
 
 def task():
     now = Datetime.now()
+    programs = read_tasks()
     print("Execution of task started at: {}".format(now))
     now_in_seconds = __to_seconds(now)
     posts = load_queue()
     post = None
     lyric = None
-    if abs(now_in_seconds - __H01) < 10:
-        pass
-    elif abs(now_in_seconds - __H09) < 10:
-        post = get_first_relevant_post(["#Galerie", "#Spruch_des_Tages"], Post.photo, posts)
-    elif abs(now_in_seconds - __H11) < 10:
-        post = get_first_relevant_post(["#Video"], Post.video, posts)
-    elif abs(now_in_seconds - __H13) < 10:
-        post = get_first_relevant_post(["#Galerie", "#Wissen"], Post.photo, posts)
-    elif abs(now_in_seconds - __H15) < 10:
-        post = get_first_relevant_post(["#Galerie", "#Geschichte"], Post.photo, posts)
-    elif abs(now_in_seconds - __H17) < 10:
-        post = get_first_relevant_post(["#Filmempfehlung"], Post.video, posts)
-    elif abs(now_in_seconds - __H19) < 10:
-        post = get_first_relevant_post(["#Galerie", "#lustig"], Post.photo, posts)
-    elif abs(now_in_seconds - __H21) < 10:
-        post = get_first_relevant_post(["#Galerie", "#Kommentar"], Post.photo, posts)
-        if post is None:
-            post = get_first_relevant_post(["#Galerie", "#Nachricht"], Post.photo, posts)
-    elif abs(now_in_seconds - __H23) < 10:
-        post = get_first_relevant_post([], Post.audio, posts)
-        lyric = get_first_relevant_post(["#Lyrik"], Post.photo, posts)
+
+    for p in programs:
+        if abs(now_in_seconds - p.seconds) < 10:
+            if p.kind == Post.audio:
+                post = get_first_relevant_post([], Post.audio, posts)
+                lyric = get_first_relevant_post(["#Lyrik"], Post.photo, posts)
+            else:
+                post = get_first_relevant_post(p.hashtags, p.kind, posts)
+        if post is not None:
+            break
 
     if post is not None:
         if lyric is not None:
@@ -84,12 +74,3 @@ journal_bot = Bot(main_bot_token)
 scheduler = Scheduler()
 
 __period = Timedelta(minutes=30).total_seconds()
-__H01 = __convert_to_local_time(1 * 3600 + 30 * 60 + 0)
-__H09 = __convert_to_local_time(9 * 3600 + 30 * 60 + 0)
-__H11 = __convert_to_local_time(11 * 3600 + 30 * 60 + 0)
-__H13 = __convert_to_local_time(13 * 3600 + 30 * 60 + 0)
-__H15 = __convert_to_local_time(15 * 3600 + 30 * 60 + 0)
-__H17 = __convert_to_local_time(17 * 3600 + 30 * 60 + 0)
-__H19 = __convert_to_local_time(19 * 3600 + 30 * 60 + 0)
-__H21 = __convert_to_local_time(21 * 3600 + 30 * 60 + 0)
-__H23 = __convert_to_local_time(23 * 3600 + 30 * 60 + 0)

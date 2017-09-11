@@ -151,3 +151,11 @@ def get_queue_handler(bot, update):
         bot.send_document(chat_id=update.message.chat_id, document=open("queue.pkl", 'rb'))
     else:
         bot.send_message(chat_id=update.message.chat_id, text="Empty file.")
+
+
+def get_tasks_handler(bot, update):
+    print("get_tasks_handler triggered by {}:".format(update.message.chat.username))
+    if os.path.getsize("tasks.txt") > 0:
+        bot.send_document(chat_id=update.message.chat_id, document=open("tasks.txt", 'rb'))
+    else:
+        bot.send_message(chat_id=update.message.chat_id, text="Empty file.")

@@ -1,1 +1,9 @@
-HH:MM:SS - [#H1, ... , #Hn] - Musik
+10:30:01 - [#Galerie, #Wissen  ] - Photo
+09:30:01 - [#Galerie, #Spruch_des_Tages] - Photo
+11:30:01 - [#Video] - Video
+14:00:01 - [#Galerie, #Geschichte] - Photo
+17:30:01 - [#Filmempfehlung] - Video
+19:30:01 - [#Galerie, #lustig] - Photo
+21:30:01 - [#Galerie, #Kommentar] - Photo
+21:30:01 - [#Galerie, #Nachricht] - Photo
+11:00:01 - [   ] - Audio

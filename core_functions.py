@@ -20,18 +20,18 @@ def delete_posts(junks, posts):  # change the name
 
 
 def send_post(bot, target, post):
-    if post.type == Post.photo:
+    if post.kind == Post.photo:
         bot.send_photo(caption=post.caption, chat_id=target, photo=post.file_id)
-    elif post.type == Post.video:
+    elif post.kind == Post.video:
         bot.send_video(caption=post.caption, chat_id=target, video=post.file_id)
-    elif post.type == Post.audio:
+    elif post.kind == Post.audio:
         bot.send_audio(caption=post.caption, chat_id=target, audio=post.file_id)
 
 
-def get_first_relevant_post(hashtagslist, type, posts):
+def get_first_relevant_post(hashtagslist, kind, posts):
     for p in posts:
         next_post = False
-        if p.type == type:
+        if p.kind == kind:
             caption = p.caption.lower()
             for h in hashtagslist:
                 if h.lower() not in caption:
