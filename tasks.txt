@@ -1,4 +1,4 @@
-09:30:01 - [#Galerie, #Spruch_des_Tages] - Photo
+10:30:01 - [#Galerie, #Spruch_des_Tages] - Photo
 11:30:01 - [#Video] - Video
 13:30:01 - [#Galerie, #Wissen] - Photo
 15:30:01 - [#Galerie, #Geschichte] - Photo

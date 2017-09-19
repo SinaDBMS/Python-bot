@@ -6,40 +6,39 @@ from data_structures import Post, read_tasks
 
 
 def task():
-    now = Datetime.now()
     try:
+        now = Datetime.now()
         programs = read_tasks()
-    except Exception:
-        print("Odd Exception occurred...")
+        print("Execution of task started at: {}".format(now))
+        now_in_seconds = __to_seconds(now)
+        posts = load_queue()
+        post = None
+        lyric = None
 
-    print("Execution of task started at: {}".format(now))
-    now_in_seconds = __to_seconds(now)
-    posts = load_queue()
-    post = None
-    lyric = None
+        for p in programs:
+            if abs(now_in_seconds - __convert_to_local_time(p.seconds)) < 10:
+                if p.kind == Post.audio:
+                    post = get_first_relevant_post([], Post.audio, posts)
+                    lyric = get_first_relevant_post(["#Lyrik"], Post.photo, posts)
+                else:
+                    post = get_first_relevant_post(p.hashtags, p.kind, posts)
+            if post is not None:
+                break
 
-    for p in programs:
-        if abs(now_in_seconds - __convert_to_local_time(p.seconds)) < 10:
-            if p.kind == Post.audio:
-                post = get_first_relevant_post([], Post.audio, posts)
-                lyric = get_first_relevant_post(["#Lyrik"], Post.photo, posts)
-            else:
-                post = get_first_relevant_post(p.hashtags, p.kind, posts)
         if post is not None:
-            break
+            if lyric is not None:
+                send_post(journal_bot, get_current_channel_id(), post)
+                send_post(journal_bot, get_current_channel_id(), lyric)
+                x = delete_posts([post, lyric], posts)
+            else:
+                send_post(journal_bot, get_current_channel_id(), post)
+                x = delete_posts([post], posts)
 
-    if post is not None:
-        if lyric is not None:
-            send_post(journal_bot, get_current_channel_id(), post)
-            send_post(journal_bot, get_current_channel_id(), lyric)
-            x = delete_posts([post, lyric], posts)
-        else:
-            send_post(journal_bot, get_current_channel_id(), post)
-            x = delete_posts([post], posts)
-
-        message = "{} post(s) sent to {} and removed from the queue.".format(x, get_current_channel_name())
-        journal_bot.send_message(chat_id=get_masters_id(), text=message)
-        print(message)
+            message = "{} post(s) sent to {} and removed from the queue.".format(x, get_current_channel_name())
+            journal_bot.send_message(chat_id=get_masters_id(), text=message)
+            print(message)
+    except Exception:
+        print("Odd Exception Occurred...")
 
 
 def start_scheduling():
