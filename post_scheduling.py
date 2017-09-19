@@ -7,7 +7,11 @@ from data_structures import Post, read_tasks
 
 def task():
     now = Datetime.now()
-    programs = read_tasks()
+    try:
+        programs = read_tasks()
+    except Exception:
+        print("Odd Exception occurred...")
+
     print("Execution of task started at: {}".format(now))
     now_in_seconds = __to_seconds(now)
     posts = load_queue()
