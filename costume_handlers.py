@@ -163,7 +163,7 @@ def get_tasks_handler(bot, update):
 
 def set_time_zone_diff_handler(bot, update, args):
     print("Set_time_zone_diff_handler triggered by {}:".format(update.message.chat.username))
-    set_time_zone_diff(args[0])
+    set_time_zone_diff(float(args[0]))
     bot.send_message(chat_id=update.message.chat_id, text="New Time Zone Difference: {}".format(get_time_zone_diff()))
 
 

@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta as Timedelta, datetime as Datetime, timedelta
 from sched import scheduler as Scheduler
 from telegram.bot import Bot
@@ -38,7 +39,7 @@ def task():
             journal_bot.send_message(chat_id=get_masters_id(), text=message)
             print(message)
     except Exception:
-        print("Odd Exception Occurred...")
+        logging.exception("Exception in post_scheduling module.")
 
 
 def start_scheduling():
