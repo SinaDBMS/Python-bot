@@ -1,3 +1,5 @@
+from asyncore import dispatcher
+
 from telegram.ext.commandhandler import CommandHandler
 from telegram.ext.filters import Filters
 from telegram.ext.messagehandler import MessageHandler
@@ -25,6 +27,8 @@ def start_bot_thread():
     send_p = CommandHandler('sendpost', manual_send_handler, pass_args=True)
     get_q = CommandHandler('getqueue', get_queue_handler)
     get_t = CommandHandler('gettasks', get_tasks_handler)
+    get_t_z_d = CommandHandler('gettimediff', get_time_zone_diff_handler)
+    set_t_z_d = CommandHandler('settimediff', set_time_zone_diff_handler, pass_args=True)
 
     dispatcher.add_handler(photo)
     dispatcher.add_handler(video)
@@ -38,5 +42,7 @@ def start_bot_thread():
     dispatcher.add_handler(send_p)
     dispatcher.add_handler(get_q)
     dispatcher.add_handler(get_t)
+    dispatcher.add_handler(get_t_z_d)
+    dispatcher.add_handler(set_t_z_d)
     updater.start_polling()
     print("Ending initialization of the bot...")

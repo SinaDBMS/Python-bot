@@ -67,7 +67,7 @@ def __to_seconds(t):
 
 
 def __convert_to_local_time(t):
-    return t - (4.5 * 3600)
+    return (t - (get_time_zone_diff() * 3600)) % 86400
 
 
 ####################################################################

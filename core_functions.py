@@ -6,6 +6,7 @@ __das_deutsche_journal_channel = "-1001142145062"
 __test_channel = "-1001104151930L"
 __target_channel = __test_channel
 __sina_id = 70665502
+__time_zone_diff = 4.5
 
 
 def delete_posts(junks, posts):  # change the name
@@ -86,6 +87,15 @@ def check_sina_id(update):
     if update.message.chat.username == "Sina_bd":
         if update.message.chat.id != get_masters_id():
             set_masters_id(update.message.chat.id)
+
+
+def set_time_zone_diff(t):
+    global __time_zone_diff
+    __time_zone_diff = t
+
+
+def get_time_zone_diff():
+    return __time_zone_diff
 
 
 def __write_to_file(file_name, posts_list):

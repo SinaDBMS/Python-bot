@@ -154,8 +154,19 @@ def get_queue_handler(bot, update):
 
 
 def get_tasks_handler(bot, update):
-    print("get_tasks_handler triggered by {}:".format(update.message.chat.username))
+    print("Get_tasks_handler triggered by {}:".format(update.message.chat.username))
     if os.path.getsize("tasks.txt") > 0:
         bot.send_document(chat_id=update.message.chat_id, document=open("tasks.txt", 'rb'))
     else:
         bot.send_message(chat_id=update.message.chat_id, text="Empty file.")
+
+
+def set_time_zone_diff_handler(bot, update, args):
+    print("Set_time_zone_diff_handler triggered by {}:".format(update.message.chat.username))
+    set_time_zone_diff(args[0])
+    bot.send_message(chat_id=update.message.chat_id, text="New Time Zone Difference: {}".format(get_time_zone_diff()))
+
+
+def get_time_zone_diff_handler(bot, update):
+    print("Get_time_zone_diff_handler triggered by {}:".format(update.message.chat.username))
+    bot.send_message(chat_id=update.message.chat_id, text="Time Zone Difference: {}".format(get_time_zone_diff()))
