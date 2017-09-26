@@ -49,6 +49,19 @@ def audio_handler(bot, update):
         bot.send_message(chat_id=get_masters_id(), text=message)
 
 
+def voice_handler(bot, update):
+    print("Voice_handler triggered by {}:".format(update.message.chat.username))
+    try:
+        caption = update.message.caption
+        file_id = update.message.voice.file_id
+        append_to_file("queue.pkl", Post(caption, file_id, Post.voice))
+        check_sina_id(update)
+    except Exception:
+        message = "Exception in " + __name__ + ": voice_handler"
+        logging.exception(message)
+        bot.send_message(chat_id=get_masters_id(), text=message)
+
+
 def document_handler(bot, update):
     print("Document_handler triggered by {}:".format(update.message.chat.username))
     try:

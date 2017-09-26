@@ -27,13 +27,19 @@ def send_post(bot, target, post):
         bot.send_video(caption=post.caption, chat_id=target, video=post.file_id)
     elif post.kind == Post.audio:
         bot.send_audio(caption=post.caption, chat_id=target, audio=post.file_id)
+    elif post.kind == Post.voice:
+        bot.send_voice(caption=post.caption, chat_id=target, voice=post.file_id)
 
 
 def get_first_relevant_post(hashtagslist, kind, posts):
     for p in posts:
         next_post = False
         if p.kind == kind:
-            caption = p.caption.lower()
+            caption = p.caption
+            if caption is None:
+                caption = ""
+            caption = caption.lower()
+
             for h in hashtagslist:
                 if h.lower() not in caption:
                     next_post = True

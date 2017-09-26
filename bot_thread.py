@@ -1,5 +1,3 @@
-from asyncore import dispatcher
-
 from telegram.ext.commandhandler import CommandHandler
 from telegram.ext.filters import Filters
 from telegram.ext.messagehandler import MessageHandler
@@ -17,7 +15,8 @@ def start_bot_thread():
     # logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     photo = MessageHandler(Filters.photo, photo_handler)
     video = MessageHandler(Filters.video, video_handler)
-    voice = MessageHandler(Filters.audio, audio_handler)
+    audio = MessageHandler(Filters.audio, audio_handler)
+    voice = MessageHandler(Filters.voice, voice_handler)
     document = MessageHandler(Filters.document, document_handler)
     view_q = CommandHandler('viewqueue', view_queue_handler)
     view_c = CommandHandler('viewchannel', view_target_channel)
@@ -32,6 +31,7 @@ def start_bot_thread():
 
     dispatcher.add_handler(photo)
     dispatcher.add_handler(video)
+    dispatcher.add_handler(audio)
     dispatcher.add_handler(voice)
     dispatcher.add_handler(document)
     dispatcher.add_handler(view_q)
